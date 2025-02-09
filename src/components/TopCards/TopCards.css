@@ -1,0 +1,27 @@
+.card-deck {
+    width: 100%;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.card {
+    width: 5rem;
+    height: 7rem;
+    border-radius: 0.1rem;
+    background-color: whitesmoke;
+    color: cadetblue;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    user-select: none;
+    cursor: grab;
+}
+
+.placeholder {
+    min-width: 5rem;
+    opacity: 0.4;
+    border: 1px solid turquoise;
+}
