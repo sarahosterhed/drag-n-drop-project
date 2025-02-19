@@ -1,9 +1,10 @@
-import { horizontalListSortingStrategy, SortableContext, useSortable } from "@dnd-kit/sortable";
+import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 
 import "./TopCards.css";
 import { Cards, SectionIdType } from "../../models/Cards";
 import { CardContainer } from "../Card/CardContainer";
 import { useMemo } from "react";
+import { useDroppable } from "@dnd-kit/core";
 
 type CardsProps = {
     cards: Cards;
@@ -12,12 +13,14 @@ type CardsProps = {
 
 export const TopCards = ({ cards, id }: CardsProps) => {
 
-    const { setNodeRef } = useSortable({
+    const { setNodeRef } = useDroppable({
         id: id,
         data: {
             type: "Section",
         }
     })
+
+
 
 
     const cardsIds = useMemo(() => {

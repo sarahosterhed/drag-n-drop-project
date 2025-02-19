@@ -1,6 +1,6 @@
 import { closestCorners, DndContext, DragEndEvent, DragOverEvent, DragOverlay, DragStartEvent, KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
-import { arrayMove, horizontalListSortingStrategy, SortableContext, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-import { useMemo, useState } from "react";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import { useState } from "react";
 import { cardData } from "../cards";
 import { TopCards } from "./TopCards/TopCards";
 import { BottomCards } from "./BottomCards/BottomCards";
@@ -15,11 +15,7 @@ import { Cards, Card, SectionIdType } from "../models/Cards";
 export const DndApp = () => {
 
     const [cards, setCards] = useState<Cards>(cardData)
-
-    // const randomCard = {
-    //     ...[...cards].sort(() => Math.random() - 0.5)[0],
-    //     sectionId: SectionIdType.TOP
-    // };
+    // const [startCard, setStartCard] = useState<Card | null>(null)
 
     // const initialCardPile = cards
     //     .filter((card) => card.id !== randomCard.id);
@@ -31,11 +27,6 @@ export const DndApp = () => {
     const [activeCard, setActiveCard] = useState<Card | null>(null);
 
     console.log("cards", cards)
-    // console.log("bottomCards", bottomCards)
-    // console.log("initial", initialCardPile)
-
-
-
 
 
     // Dnd handlers
@@ -72,6 +63,7 @@ export const DndApp = () => {
         const isOverACard = over.data.current?.type === "Card";
 
         if (!isActiveACard) return;
+        if (!isOverACard) return;
 
         //Dropping a Card over another Card
         if (isActiveACard && isOverACard) {
@@ -79,7 +71,7 @@ export const DndApp = () => {
                 const activeIndex = cards.findIndex((card) => card.id === activeCardId)
                 const overIndex = cards.findIndex((card) => card.id === overCardId);
 
-                if (cards[activeIndex].sectionId !== cards[overIndex].sectionId) {
+                if (cards[activeIndex].sectionId === SectionIdType.BOTTOM) {
                     cards[activeIndex].sectionId = cards[overIndex].sectionId
                 }
 
@@ -88,6 +80,7 @@ export const DndApp = () => {
         }
 
         const isOverASection = over.data.current?.type === "Section";
+        if (!isOverASection) return;
 
         // Dropping a card over the Top Section
         if (isActiveACard && isOverASection) {
@@ -102,10 +95,6 @@ export const DndApp = () => {
     }
 
 
-
-    // const handleDragMove = (event: DragMoveEvent) => {
-
-    // }
 
     const handleDragEnd = (event: DragEndEvent) => {
         setActiveCard(null);
@@ -132,28 +121,32 @@ export const DndApp = () => {
 
     }
 
+    const shuffleCards = (cards: Cards): Cards => {
+        const shuffledCards = [...cards]
+        for (let i = shuffledCards.length - 1; i > 0; i--) {
+            const random = Math.floor(Math.random() * (i + 1));
 
-    // const {
-    //         attributes,
-    //         listeners,
-    //         setNodeRef,
-    //         transform,
-    //         transition,
-    //         isDragging,
-    //     } = useSortable({
-    //         id: card.id,
-    //         data: {
-    //             type: "Card",
-    //             card
-    //         }
-    //     });
+            [shuffledCards[i], shuffledCards[random]] = [shuffledCards[random], shuffledCards[i]]
+        }
+        return shuffledCards;
+    }
 
-    //     const style = {
-    //         transition,
-    //         transform: CSS.Transform.toString(transform)
-    //     }
+    const handleStart = () => {
+        console.log("Före nollställning", cards)
+        setCards((prevCards) => {
+            const resetCards = prevCards.map((card) => ({ ...card, sectionId: SectionIdType.BOTTOM }));
+            const shuffledCards = shuffleCards(resetCards);
+            const updatedCards = [{ ...shuffledCards[0], sectionId: SectionIdType.TOP },
+            ...shuffledCards.slice(1),
+            ];
+            return updatedCards;
+        })
 
 
+        console.log("Efter nollställning", cards)
+        console.log("Efter blandning", cards)
+        console.log("Efter uppdatering av startkort", cards)
+    }
 
 
     return (
@@ -166,24 +159,24 @@ export const DndApp = () => {
                 collisionDetection={closestCorners}
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
-                // onDragMove={handleDragMove}
                 onDragEnd={handleDragEnd}
             >
-                <SortableContext items={cards} strategy={horizontalListSortingStrategy}>
 
-                    <TopCards id={SectionIdType.TOP} cards={cards.filter((card) => card.sectionId === SectionIdType.TOP)} />
+                <TopCards id={SectionIdType.TOP} cards={cards.filter((card) => card.sectionId === SectionIdType.TOP)} />
 
-                    <BottomCards
-                        id={SectionIdType.BOTTOM}
-                        cards={cards.filter((card) => card.sectionId === SectionIdType.BOTTOM)} />
-                </SortableContext>
+                <BottomCards
+                    id={SectionIdType.BOTTOM}
+                    cards={cards.filter((card) => card.sectionId === SectionIdType.BOTTOM)} />
 
                 {createPortal(
                     <DragOverlay>
                         {activeCard && <CardContainer card={activeCard} />}
-                    </DragOverlay>, document.body
+                    </DragOverlay>,
+                    document.body
                 )}
             </DndContext>
+
+            <button onClick={handleStart}>Click to Start!</button>
         </div >
     )
 }

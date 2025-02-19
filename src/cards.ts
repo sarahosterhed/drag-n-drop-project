@@ -8,7 +8,7 @@ const cardData = [
         img: "../assets/smartphone.svg",
         hidden: true,
         description: "des_smartphone",
-        sectionId: SectionIdType.TOP
+        sectionId: SectionIdType.BOTTOM
     },
     {
         id: 2,
@@ -17,7 +17,7 @@ const cardData = [
         img: "../assets/jeans.svg",
         hidden: true,
         description: "des_jeans",
-        sectionId: SectionIdType.TOP
+        sectionId: SectionIdType.BOTTOM
     },
     {
         id: 3,
@@ -26,7 +26,7 @@ const cardData = [
         img: "../assets/t-shirt.svg",
         hidden: true,
         description: "des_shirt",
-        sectionId: SectionIdType.TOP
+        sectionId: SectionIdType.BOTTOM
     },
     {
         id: 4,
@@ -35,7 +35,7 @@ const cardData = [
         img: "../assets/bag.svg",
         hidden: true,
         description: "des_bag",
-        sectionId: SectionIdType.TOP
+        sectionId: SectionIdType.BOTTOM
     },
     {
         id: 5,
